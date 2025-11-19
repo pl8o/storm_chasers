@@ -1,97 +1,281 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storm Chasers</title>
+
 <style>
-body{
-  margin:0;
-}
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-  height:100%;
-  position:absolute;
-  bottom: 0;
-  border-top: 0;
-  border-left: 0;
-  margin-left:0;
-  margin-right:0;
-  background-color: transparent;
-
-}
-th{
-  min-width: 100%;
-  min-height: 100%;
-  position: fixed;
-  right: 0;
-  bottom:0;
-  background-color: transparent;
-
+/* -------------------- GENERAL PAGE SETTINGS -------------------- */
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    background: black;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-#myVideo{
-      position: absolute;
-      z-index: -1;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-
+/* -------------------- BACKGROUND VIDEO -------------------- */
+#myVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+    background: black;
 }
 
-
-
-.stormchasers{
-font-size:8vw;
-font-weight:bold;
-font-family: Arial, Helvetica, sans-serif;
-color:black;
-line-height:82%;
-position:absolute;
-bottom:33%;
-margin-left:15%;
-background-color: transparent;
-
+/* -------------------- LIGHTNING LAYER -------------------- */
+#lightning {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 5;
 }
 
-.black{
-
- position:absolute;
- bottom:0;
- left:0;
- height: 35%;
- width:100%;
- margin-left:0;
- background-color: black;
-
+/* -------------------- RAIN LAYER -------------------- */
+#rain {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 6;
 }
 
+/* -------------------- STORMCHASERS TITLE (SEPARATE LETTERS + NEON + JITTER) -------------------- */
+.stormchasers {
+    font-size: clamp(32px, 8vw, 140px);
+    font-weight: bold;
+    color: white;
+    position: fixed;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 20;
+    line-height: 0.85;
+    display: flex;
+    justify-content: center;
+}
 
+.stormchasers span {
+    display: inline-block;
+    transition: text-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
+    text-shadow:
+        0 0 6px #00eaff,
+        0 0 12px #00eaff,
+        0 0 20px #00d0ff,
+        0 0 35px #00aaff,
+        0 0 60px #0088cc,
+        0 0 100px #006699;
+    will-change: transform, text-shadow;
+}
+
+/* -------------------- BLACK FOOTER -------------------- */
+.black {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 35%;
+    background: black;
+    z-index: 10;
+}
+
+/* -------------------- FOOTER MASK LINKS -------------------- */
+.footer-links {
+    position: fixed;
+    bottom: 5%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(30px, 4vw, 60px);
+    z-index: 20;
+}
+
+.footer-links img {
+    width: clamp(60px, 12vw, 130px);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.footer-links img:hover {
+    transform: scale(1.12);
+}
+
+/* -------------------- CLOUDS BACKGROUND -------------------- */
+.clouds {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300%;
+    height: 120%;
+    background: url('https://i.imgur.com/8xQX5BF.png') repeat-x;
+    background-size: cover;
+    animation: moveClouds 90s linear infinite;
+    opacity: 0.55;
+    filter: grayscale(100%);
+    z-index: -2;
+}
+
+@keyframes moveClouds {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-66%); }
+}
 </style>
 </head>
+
 <body>
-<table>
-  <tr>
-    <th>
-      <div>
-        <video autoplay loop muted no-controls id="myVideo">
-        <source src="clouds.mp4" type="video/mp4">
-       </video>
-      </div>
-    </th>
-  </tr>
 
-  <tr>
-    <td class="stormchasers">STORMCHASERS</td>
-  </tr>
-  <tr>
-    <td>
-      <div class="black"></div>
-    </td>
-  </tr>
+<!-- Background Video -->
+<video id="myVideo" autoplay loop muted playsinline>
+    <source src="clouds.mp4" type="video/mp4">
+</video>
 
+<!-- Storm Layers -->
+<div class="clouds"></div>
+<canvas id="lightning"></canvas>
+<canvas id="rain"></canvas>
 
-</table>
+<!-- Neon STORMCHASERS Title -->
+<div class="stormchasers" id="stormTitle"></div>
+
+<!-- Black Footer -->
+<div class="black"></div>
+
+<!-- Footer Mask Links -->
+<div class="footer-links">
+    <a href="https://LINK-ORIGINAL.com"><img src="mask.png" alt="mask"></a>
+    <a href="https://LINK-1.com"><img src="mask.png"></a>
+    <a href="https://LINK-2.com"><img src="mask.png"></a>
+    <a href="https://LINK-3.com"><img src="mask.png"></a>
+    <a href="https://LINK-4.com"><img src="mask.png"></a>
+</div>
+
+<script>
+/* -------------------- SPLIT TITLE INTO INDIVIDUAL LETTERS -------------------- */
+const titleText = "STORMCHASERS";
+const stormTitle = document.getElementById('stormTitle');
+stormTitle.innerHTML = '';
+for(let i=0; i<titleText.length; i++){
+    const span = document.createElement('span');
+    span.textContent = titleText[i];
+    stormTitle.appendChild(span);
+}
+
+const letterSpans = document.querySelectorAll('.stormchasers span');
+
+/* -------------------- SUBTLE AMBIENT JITTER -------------------- */
+function ambientJitter() {
+    letterSpans.forEach(span => {
+        const x = (Math.random() - 0.5) * 2; // very subtle horizontal
+        const y = (Math.random() - 0.5) * 2; // very subtle vertical
+        span.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    requestAnimationFrame(ambientJitter);
+}
+ambientJitter();
+
+/* -------------------- LIGHTNING SCRIPT WITH LETTER PULSE & JITTER -------------------- */
+const lightning = document.getElementById("lightning");
+const ctxL = lightning.getContext("2d");
+lightning.width = window.innerWidth;
+lightning.height = window.innerHeight;
+
+function flashLightning() {
+    const intensity = Math.random()*0.5;
+
+    // Lightning canvas flash
+    ctxL.fillStyle = `rgba(255,255,255,${intensity})`;
+    ctxL.fillRect(0,0,lightning.width, lightning.height);
+
+    // Lightning pulse & stronger jitter
+    letterSpans.forEach(span => {
+        const pulse = Math.random() * intensity * 400;
+        const xJitter = Math.random()*6 - 3;
+        const yJitter = Math.random()*6 - 3;
+        span.style.textShadow = `
+            0 0 ${6+pulse}px #00eaff,
+            0 0 ${12+pulse}px #00eaff,
+            0 0 ${20+pulse}px #00d0ff,
+            0 0 ${35+pulse}px #00aaff,
+            0 0 ${60+pulse}px #0088cc,
+            0 0 ${100+pulse}px #006699
+        `;
+        span.style.transform = `translate(${xJitter}px, ${yJitter}px) rotate(${Math.random()*3-1.5}deg)`;
+    });
+
+    setTimeout(() => {
+        ctxL.clearRect(0,0,lightning.width, lightning.height);
+        // Reset glow after flash
+        letterSpans.forEach(span => {
+            span.style.textShadow = `
+                0 0 6px #00eaff,
+                0 0 12px #00eaff,
+                0 0 20px #00d0ff,
+                0 0 35px #00aaff,
+                0 0 60px #0088cc,
+                0 0 100px #006699
+            `;
+        });
+    }, 80);
+
+    setTimeout(flashLightning, Math.random()*4000 + 2000);
+}
+flashLightning();
+
+/* -------------------- FALLING RAIN SCRIPT -------------------- */
+const rain = document.getElementById("rain");
+const ctxR = rain.getContext("2d");
+rain.width = window.innerWidth;
+rain.height = window.innerHeight;
+
+let drops = [];
+for (let i=0;i<350;i++){
+    drops.push({
+        x: Math.random()*rain.width,
+        y: Math.random()*rain.height,
+        length: Math.random()*20+10,
+        speed: Math.random()*4+4
+    });
+}
+
+function drawRain(){
+    ctxR.clearRect(0,0,rain.width,rain.height);
+    ctxR.strokeStyle="rgba(180,180,255,0.6)";
+    ctxR.lineWidth=1.2;
+
+    drops.forEach(d => {
+        ctxR.beginPath();
+        ctxR.moveTo(d.x,d.y);
+        ctxR.lineTo(d.x,d.y+d.length);
+        ctxR.stroke();
+        d.y += d.speed;
+
+        if(d.y > rain.height){
+            d.y = -20;
+            d.x = Math.random()*rain.width;
+        }
+    });
+
+    requestAnimationFrame(drawRain);
+}
+drawRain();
+
+/* -------------------- HANDLE WINDOW RESIZE -------------------- */
+window.addEventListener("resize", () => {
+    lightning.width = window.innerWidth;
+    lightning.height = window.innerHeight;
+    rain.width = window.innerWidth;
+    rain.height = window.innerHeight;
+});
+</script>
+
 </body>
 </html>
